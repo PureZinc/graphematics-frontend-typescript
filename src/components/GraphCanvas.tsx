@@ -31,7 +31,7 @@ export class Graph {
         }
     }
 
-    addVertex(key: string, vertex: Vertex): void {this.vertices[key] = vertex;}
+    addOrUpdateVertex(key: string, vertex: Vertex): void {this.vertices[key] = vertex;}
     getVertex(key: string): Vertex | null {return this.vertices[key] || null}
     deleteVertex(key: string): void {
         const vertex = this.getVertex(key);
@@ -212,7 +212,7 @@ export function GraphEditor({dimensions=[500, 400], graphState, currentState='ad
         }
     };
 
-const onMouseDown = ({event}: CanvasEventProps) => {
+    const onMouseDown = ({event}: CanvasEventProps) => {
         const mousePos = getMousePos(event);
         switch (currentState) {
             case 'move_vertex':
@@ -225,7 +225,7 @@ const onMouseDown = ({event}: CanvasEventProps) => {
             case 'add_vertex':
                 const id = generateRandomId()
                 const vertex: Vertex = {neighbors: [], position: [mousePos.x, mousePos.y], labels: []}
-                graphInstance.addVertex(id, vertex);
+                graphInstance.addOrUpdateVertex(id, vertex);
                 break;
             case 'add_edge':
                 addEdge(mousePos.x, mousePos.y);
@@ -236,10 +236,13 @@ const onMouseDown = ({event}: CanvasEventProps) => {
             default:
                 break;
         }
+        graphInstance.drawOnCampus(canvasRef.current);
     };
 
     const onMouseUp = () => {
-        setSelectedVertex(null);
+        if (currentState !== 'edit_vertex') {
+            setSelectedVertex(null);
+        }
         setIsDragging(false);
     };
 
