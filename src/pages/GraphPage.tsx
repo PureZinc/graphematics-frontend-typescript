@@ -19,7 +19,7 @@ type GraphsResponse = {
 }
 
 function Graphs() {
-    const { data: graphs, loading, error } = useFetch<GraphsResponse>("/graphs");
+    const { data: graphs, loading, error } = useFetch<GraphsResponse>("/graphs/");
     
     // Check for loading state
     if (loading) return <div>Loading...</div>;

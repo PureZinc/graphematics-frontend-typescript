@@ -6,7 +6,7 @@ import { GraphRetrieveResponse } from './GraphPage';
 
 export default function GraphDetail() {
     const { id } = useParams();
-    const {data: graph, loading, error} = useFetch<GraphRetrieveResponse>(`/graphs/${id}`);
+    const {data: graph, loading, error} = useFetch<GraphRetrieveResponse>(`/graphs/${id}/`);
     // const {data: user, loading: loadUser} = useFetch(`/auth/users/${loading ? '' : graph.creator}`);
 
     if (loading) return <div>Loading...</div>;

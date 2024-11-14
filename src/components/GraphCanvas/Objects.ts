@@ -129,14 +129,6 @@ export class GraphCanvas extends Graph {
 
         for (const key in this.vertices) {
             const vertex = this.vertices[key];
-            const scaledPos = scalar(vertex.position);
-            const color = vertex.labels[0]
-
-            this.drawVertex(scaledPos, radiusSize, color)
-        }
-
-        for (const key in this.vertices) {
-            const vertex = this.vertices[key];
             const scaledPos1 = scalar(vertex.position);
 
             for (const neighborKey of vertex.neighbors) {
@@ -146,6 +138,14 @@ export class GraphCanvas extends Graph {
                     this.drawEdge(scaledPos1, scaledPos2);
                 }
             }
+        }
+
+        for (const key in this.vertices) {
+            const vertex = this.vertices[key];
+            const scaledPos = scalar(vertex.position);
+            const color = vertex.labels[0]
+
+            this.drawVertex(scaledPos, radiusSize, color)
         }
     }
 
