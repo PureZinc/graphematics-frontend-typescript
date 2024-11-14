@@ -1,8 +1,8 @@
 import GraphPage from "./pages/GraphPage";
 import GraphDetail from "./pages/GraphDetail";
 import HomePage from "./pages/HomePage";
-// import LoginPage from "./pages/auth/LoginPage";
-// import RegisterPage from "./pages/auth/RegisterPage";
+import LoginPage from "./pages/auth/LoginPage";
+import RegisterPage from "./pages/auth/RegisterPage";
 import Navbar from "./components/Navbar";
 import BuildGraph from "./pages/BuildGraph";
 
@@ -19,7 +19,9 @@ function AllRoutes() {
     { element: GraphPage, path: "graphs/" },
     { element: GraphDetail, path: "graphs/:id/" },
     { element: BuildGraph, path: "create/" },
-    { element: BuildGraph, path: "create/:id/" }
+    { element: BuildGraph, path: "create/:id/" },
+    { element: LoginPage, path: "login/" },
+    { element: RegisterPage, path: "register/" },
   ]
   return (
     <Routes>
