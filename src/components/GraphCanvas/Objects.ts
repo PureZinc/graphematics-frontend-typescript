@@ -36,7 +36,7 @@ class Graph {
     }
 
     addOrUpdateVertex(key: string, vertex: Vertex): void { this.vertices[key] = vertex; }
-    getVertex(key: string): Vertex | null { return this.vertices[key] || null }
+    getVertex(key: string | null): Vertex | null { return key ? this.vertices[key] || null : null }
     addVertex(vertex: Vertex): void {
         let key = generateRandomId();
         if (!this.getVertex(key)) {
@@ -82,8 +82,15 @@ class Graph {
     }
 }
 
+type SelectedVertex = {
+    vertex: Vertex,
+    color: string
+}
 export class GraphCanvas extends Graph {
-    private readonly ctx: CanvasRenderingContext2D; private defaultRadiusSize: number = 10;
+    private readonly ctx: CanvasRenderingContext2D; 
+    private defaultRadiusSize: number = 10;
+    private selectedVertices: Map<string, SelectedVertex> = new Map();
+
     constructor(ctx: CanvasRenderingContext2D|null|undefined, graphData: GraphData) {
         super(graphData);
         if (!ctx) throw new Error("CanvasRenderingContext2D is required");
@@ -91,12 +98,20 @@ export class GraphCanvas extends Graph {
         this.drawOnCampus();
     }
 
-    private drawVertex(position: PositionArray, radiusSize = this.defaultRadiusSize, color: string|number|undefined = 'black') {
+    private drawVertex(
+        position: PositionArray, 
+        radiusSize = this.defaultRadiusSize, 
+        color: string|number|undefined = 'black', 
+        outlineColor: string = 'black',
+        outlineWidth: number = 1
+    ) {
         const [x, y] = position;
         this.ctx.beginPath();
         this.ctx.arc(x, y, radiusSize, 0, Math.PI * 2, false);
         this.ctx.fillStyle = (typeof color === 'string' && color) || 'black';
         this.ctx.fill();
+        this.ctx.strokeStyle = outlineColor;
+        this.ctx.lineWidth = outlineWidth;
         this.ctx.stroke();
     }
 
@@ -121,11 +136,24 @@ export class GraphCanvas extends Graph {
         const distance = Math.hypot(mousePos.x - vertex.position[0], mousePos.y - vertex.position[1]);
         return distance <= this.defaultRadiusSize;
     };
+
+    selectVertex(vertexId: string, color: string) {
+        const vertex = this.getVertex(vertexId);
+        if (vertex) {
+            this.selectedVertices.set(vertexId, { vertex, color });   
+        }
+    }
+    unselectAllVertices() {
+        this.selectedVertices.clear();
+    }
+    isVertexSelected(vertexId: string): boolean {
+        return this.selectedVertices.has(vertexId);
+    }
     
     drawOnCampus(radiusSize=this.defaultRadiusSize, scale:PositionArray=[1, 1]) {
         const scalar = ([x, y]: PositionArray): PositionArray => [x * scale[0], y * scale[1]]
         
-        this.clearCanvas()
+        this.clearCanvas();
 
         for (const key in this.vertices) {
             const vertex = this.vertices[key];
@@ -140,12 +168,19 @@ export class GraphCanvas extends Graph {
             }
         }
 
-        for (const key in this.vertices) {
-            const vertex = this.vertices[key];
+        for (const id in this.vertices) {
+            const vertex = this.vertices[id];
             const scaledPos = scalar(vertex.position);
             const color = vertex.labels[0]
+            let outlineColor, outlineWidth;
 
-            this.drawVertex(scaledPos, radiusSize, color)
+            if (this.isVertexSelected(id)) {
+                const selVertex = this.selectedVertices.get(id);
+                outlineColor = selVertex?.color;
+                outlineWidth = 3;
+            }
+
+            this.drawVertex(scaledPos, radiusSize, color, outlineColor, outlineWidth);
         }
     }
 

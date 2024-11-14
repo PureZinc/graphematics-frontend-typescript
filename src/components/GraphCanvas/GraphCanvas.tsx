@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { GraphCanvas, GraphData, PositionArray, Vertex, EditingState } from './Objects';
 
+
 interface GraphDisplayProps {
     graphData: GraphData;
     radius?: number;
@@ -63,7 +64,8 @@ interface GraphEditorProps {
 }
 export function GraphEditor({dimensions=[500, 400], graphData, currentState='add_vertex'}: GraphEditorProps) {
     const [width, height] = dimensions;
-    const [selectedVertex, setSelectedVertex] = useState<Vertex | null>(null);
+    const [selectedVertexId, setselectedVertexId] = useState<string | null>(null);
+    const [selectedStartEdge, setSelectedStartEdge] = useState<string | null>(null);
     const [isDragging, setIsDragging] = useState<boolean>(false);
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -80,16 +82,45 @@ export function GraphEditor({dimensions=[500, 400], graphData, currentState='add
         }
     }, [graphData]);
 
+    const makeSelection = (vari: string | null, color: string) => {
+        const graphCanvas = graphRef?.current;
+        if (vari) {
+            graphCanvas?.selectVertex(vari, color);
+        } else {
+            graphCanvas?.unselectAllVertices();
+        }
+        graphCanvas?.drawOnCampus();
+    }
+
+    useEffect(() => {
+        makeSelection(selectedStartEdge, 'yellow')
+    }, [selectedStartEdge])
+
+    useEffect(() => {
+        makeSelection(selectedVertexId, 'red')
+    }, [selectedVertexId])
+
     const onMouseDown = (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
         const graphCanvas = graphRef.current;
         const mousePos = graphCanvas?.getMousePos(event.nativeEvent);
         if (!mousePos) return;
 
+        const vertexId = Object.keys(graphData).find(id => graphCanvas?.isMouseOverVertex(mousePos, graphData[id]));
+
         switch (currentState) {
-            case 'move_vertex':
-                const vertexId = Object.keys(graphData).find(id => graphRef.current?.isMouseOverVertex(mousePos, graphData[id]));
+            case 'add_edge':
                 if (vertexId) {
-                    setSelectedVertex(graphData[vertexId]);
+                    if (!selectedStartEdge) {
+                        setSelectedStartEdge(vertexId);
+                    } else {
+                        graphCanvas?.addEdge(selectedStartEdge, vertexId)
+                        setSelectedStartEdge(null);
+                    }
+                }
+                break;
+            case 'move_vertex':
+                if (vertexId) {
+                    setselectedVertexId(vertexId);
                     setIsDragging(true);
                 }
                 break;
@@ -109,10 +140,11 @@ export function GraphEditor({dimensions=[500, 400], graphData, currentState='add
 
     const onMouseMove = (event: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => {
         const graphCanvas = graphRef.current;
-        if (isDragging && selectedVertex) {
+        const selectedV = graphCanvas?.getVertex(selectedVertexId);
+        if (isDragging && selectedV) {
             const mousePos = graphCanvas?.getMousePos(event.nativeEvent);
             if (mousePos) {
-                selectedVertex.position = [mousePos.x, mousePos.y];
+                selectedV.position = [mousePos.x, mousePos.y];
                 graphCanvas?.clearCanvas();
                 graphCanvas?.drawOnCampus();
             }
@@ -121,7 +153,7 @@ export function GraphEditor({dimensions=[500, 400], graphData, currentState='add
 
     const onMouseUp = () => {
         if (currentState !== 'edit_vertex') {
-            setSelectedVertex(null);
+            setselectedVertexId(null);
         }
         setIsDragging(false);
     };
