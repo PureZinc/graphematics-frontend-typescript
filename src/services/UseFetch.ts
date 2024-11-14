@@ -34,7 +34,7 @@ const useFetch = (url: string, method = 'GET', body = null, token = null) => {
 
                 const result = await response.json();
                 setData(result);
-            } catch (error) {
+            } catch (error: any) {
                 setError(error.message);
             } finally {
                 setLoading(false);
