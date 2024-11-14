@@ -1,13 +1,12 @@
 // AuthContext.js
 import React, { createContext, useState, useEffect, ReactNode } from "react";
+import { ID } from "../GlobalTypes";
 import { BASE_URL } from "../config";
 
 type LoginData = {
   username: string,
   password: string
 };
-
-type ID = string | number;
 
 type User = {
   id: ID,

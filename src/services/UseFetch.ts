@@ -1,8 +1,13 @@
 import { useState, useEffect } from 'react';
 import { BASE_URL } from '../config';
 
-const useFetch = (url: string, method = 'GET', body = null, token = null) => {
-    const [data, setData] = useState(null);
+type FetchData<T> = {
+    data: T | null,
+    loading: boolean,
+    error: string | null
+}
+const useFetch = <T>(url: string, method = 'GET', body = null, token = null): FetchData<T> => {
+    const [data, setData] = useState<T | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 

@@ -2,7 +2,10 @@ import { Link } from "react-router-dom"
 import { useContext } from "react";
 import AuthContext from "../services/Auth";
 
-const Links = ({isAuth}) => {
+type LinksProps = {
+    isAuth: boolean;
+}
+const Links = ({isAuth}: LinksProps) => {
     return (
         <ul className="menu menu-horizontal px-1">
             <li><Link to="/graphs">Graphs</Link></li>
@@ -19,7 +22,10 @@ const Links = ({isAuth}) => {
     )
 }
 
-const ProfileDropdown = ({logoutFunction}) => {
+type ProfileDropdownProps = {
+    logoutFunction: () => void;
+}
+const ProfileDropdown = ({logoutFunction}: ProfileDropdownProps) => {
     return (
         <div className="dropdown dropdown-end">
             <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
@@ -41,7 +47,7 @@ const ProfileDropdown = ({logoutFunction}) => {
 }
 
 export default function Navbar() {
-    const { user, logout } = useContext(AuthContext);
+    const { user, logout } = useContext(AuthContext) || { user: null, logout: () => {} };
 
   return (
     <div className="navbar bg-base-100 p-3">
@@ -50,7 +56,7 @@ export default function Navbar() {
         </div>
         <div className="flex-none gap-2">
 
-            <Links isAuth={user} />
+            <Links isAuth={!!user} />
 
             {user && <ProfileDropdown logoutFunction={logout}/>}
             
