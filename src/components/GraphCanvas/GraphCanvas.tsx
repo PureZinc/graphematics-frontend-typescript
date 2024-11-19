@@ -145,7 +145,6 @@ export function GraphEditor({dimensions=[500, 400], graphData, currentState='add
             const mousePos = graphCanvas?.getMousePos(event.nativeEvent);
             if (mousePos) {
                 selectedV.position = [mousePos.x, mousePos.y];
-                graphCanvas?.clearCanvas();
                 graphCanvas?.drawOnCampus();
             }
         }

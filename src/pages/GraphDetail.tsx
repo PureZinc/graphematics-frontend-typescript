@@ -2,11 +2,11 @@ import useFetch from '../services/UseFetch';
 import { useParams } from 'react-router-dom';
 import { GraphDisplay } from "../components/GraphCanvas/GraphCanvas";
 import { Link } from "react-router-dom";
-import { GraphRetrieveResponse } from './GraphPage';
+import { UserGraphInstance } from './GraphPage';
 
 export default function GraphDetail() {
     const { id } = useParams();
-    const {data: graph, loading, error} = useFetch<GraphRetrieveResponse>(`/graphs/${id}/`);
+    const {data: graph, loading, error} = useFetch<UserGraphInstance>(`/graphs/${id}/`);
     // const {data: user, loading: loadUser} = useFetch(`/auth/users/${loading ? '' : graph.creator}`);
 
     if (loading) return <div>Loading...</div>;

@@ -4,22 +4,22 @@ import useFetch from "../services/UseFetch";
 import { Link } from "react-router-dom";
 
 
-export type GraphRetrieveResponse = {
+export type UserGraphInstance = {
     id: number,
     creator: number,
     name: string,
     description: string,
     data: GraphData
 }
-type GraphsResponse = {
+type UserGraphs = {
     count: number,
     next: number | null,
     previous: number | null,
-    results: GraphRetrieveResponse[]
+    results: UserGraphInstance[]
 }
 
 function Graphs() {
-    const { data: graphs, loading, error } = useFetch<GraphsResponse>("/graphs/");
+    const { data: graphs, loading, error } = useFetch<UserGraphs>("/graphs/");
     
     // Check for loading state
     if (loading) return <div>Loading...</div>;
