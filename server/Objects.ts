@@ -17,7 +17,7 @@ type Vertex = {
     labels?: VertexLabels
 }
 
-type GraphData = {[key: string]: Vertex}
+export type GraphData = {[key: string]: Vertex}
 
 export class Graph {
     private vertices: GraphData;
@@ -95,7 +95,29 @@ export class Graph {
 }
 
 
-export class GraphClasses extends Graph {
+class GraphTransformer extends Graph {
+    getTransformByName(gTransName: string): Function {
+        const methodName = `${gTransName}Graph`
+        if (typeof this[methodName] === 'function') {
+            return this[methodName];
+        } else {
+            throw new Error(`Method "${methodName}" does not exist as a transform of the Graph.`);
+        }
+    }
+
+    static allTransforms() {
+        let transArray: string[] = [];
+        for (let transName of Object.keys(this)) {
+            if (transName.endsWith('Graph')) {
+                transArray.push(transName);
+            }
+        }
+        return transArray;
+    }
+}
+
+
+export class GraphClasses extends GraphTransformer {
     private circularArrangement(num: number, distance: number = 100): string[] {
         const keys: string[] = [];
 
@@ -171,12 +193,13 @@ export class GraphClasses extends Graph {
     }
 }
 
+
 type EdgeLine = {
     vertex: Vertex,
     prevVertices: [string, string]
 }
 
-export class GraphFunctions extends Graph {
+export class GraphFunctions extends GraphTransformer {
     private findMidsection(pos1: PositionArray, pos2: PositionArray): PositionArray {
         return [(pos1[0] + pos2[0]) / 2, (pos1[1] + pos2[1]) / 2];
     }
